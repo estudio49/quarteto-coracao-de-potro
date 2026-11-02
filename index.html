@@ -52,6 +52,27 @@
   .preco s { color: var(--muted); margin-right: 6px; }
   .preco b { font-size: 20px; font-weight: 600; }
   .preco small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--accent-text); }
+  .medidas { margin: 18px 0 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+  .medidas summary {
+    list-style: none; cursor: pointer; text-align: center; font-size: 14px; font-weight: 600;
+    min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius);
+  }
+  .medidas summary::-webkit-details-marker { display: none; }
+  .medidas summary::after { content: "+"; font-weight: 400; font-size: 18px; color: var(--muted); }
+  .medidas[open] summary::after { content: "\2212"; }
+  .medidas summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mbox { padding: 4px 14px 16px; }
+  .mbox svg { display: block; width: 190px; max-width: 70%; height: auto; margin: 0 auto 6px; }
+  .mbox svg .sh { fill: var(--soft); stroke: var(--muted); stroke-width: 1.5; stroke-linejoin: round; }
+  .mbox svg .ln { stroke: var(--accent-text); stroke-width: 1.6; stroke-linecap: round; fill: none; }
+  .mbox svg text { font: 700 11px system-ui, sans-serif; fill: var(--accent-text); }
+  .mbox table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .mbox th, .mbox td { padding: 7px 4px; text-align: center; border-bottom: 1px solid var(--line); }
+  .mbox thead th { font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.25; }
+  .mbox thead th b { display: block; color: var(--accent-text); font-size: 13px; }
+  .mbox tbody th { font-weight: 600; text-align: left; padding-left: 8px; }
+  .mbox tbody tr:last-child th, .mbox tbody tr:last-child td { border-bottom: 0; }
+  .mbox .nota { margin: 10px 0 0; font-size: 12px; color: var(--muted); text-align: center; }
   .how { margin: 22px 0 6px; font-size: 13px; color: var(--muted); text-align: center; }
 
   .item {
@@ -137,7 +158,34 @@
 </header>
 
 <main class="wrap">
-  <p class="how">Toque no tamanho para adicionar. Pode escolher mais de uma estampa.</p>
+    <details class="medidas">
+    <summary>Tabela de medidas</summary>
+    <div class="mbox">
+      <svg viewBox="0 0 200 170" role="img" aria-label="Desenho da camiseta indicando onde cada medida é tirada: A largura, B comprimento, C ombro, D manga">
+        <path class="sh" d="M72 20 L52 28 L22 50 L36 74 L52 64 L52 150 L148 150 L148 64 L164 74 L178 50 L148 28 L128 20 Q100 42 72 20 Z"/>
+        <path class="ln" d="M52 98 H148 M52 94 V102 M148 94 V102"/>
+        <path class="ln" d="M100 44 V150 M96 44 H104 M96 150 H104" transform="translate(0 0)"/>
+        <path class="ln" d="M66 12 L16 44"/>
+        <path class="ln" d="M12 58 L28 84"/>
+        <text x="106" y="90">A</text><text x="106" y="124">B</text><text x="34" y="22">C</text><text x="2" y="80">D</text>
+      </svg>
+      <table>
+        <thead><tr><th>Tam.</th><th><b>A</b>Largura</th><th><b>B</b>Comprim.</th><th><b>C</b>Ombro</th><th><b>D</b>Manga</th></tr></thead>
+        <tbody>
+        <tr><th scope="row">PP</th><td>49</td><td>68</td><td>11</td><td>19</td></tr>
+        <tr><th scope="row">P</th><td>51</td><td>70</td><td>12</td><td>20</td></tr>
+        <tr><th scope="row">M</th><td>53</td><td>72</td><td>13</td><td>21</td></tr>
+        <tr><th scope="row">G</th><td>55</td><td>75</td><td>14</td><td>22</td></tr>
+        <tr><th scope="row">GG</th><td>58</td><td>78</td><td>15</td><td>23</td></tr>
+        <tr><th scope="row">G1</th><td>66</td><td>84</td><td>21</td><td>25</td></tr>
+        <tr><th scope="row">G2</th><td>68</td><td>86</td><td>22</td><td>26</td></tr>
+        <tr><th scope="row">G3</th><td>70</td><td>88</td><td>23</td><td>27</td></tr>
+        </tbody>
+      </table>
+      <p class="nota">Medidas da peça, em cm. Pode ocorrer variação de até 2&nbsp;cm.</p>
+    </div>
+  </details>
+<p class="how">Toque no tamanho para adicionar. Pode escolher mais de uma estampa.</p>
   <div id="lista"></div>
   <p class="info" id="info"></p>
 </main>
