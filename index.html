@@ -206,7 +206,7 @@
 const WHATSAPP = "5549999854920";   // (49) 99985-4920
 const PRECO_NORMAL = 110;        // preço por peça depois da promoção
 const PRECO_PROMO = 100;         // preço promocional por peça
-const PROMO_ATE = "2026-11-06";  // último dia da promoção (inclusive); depois volta ao preço normal
+const PROMO_ATE = "2026-11-08T21:00:00-03:00";  // fim da promoção (horário de Brasília); depois volta ao preço normal
 const INFO = "Prazo, retirada e pagamento combinados pelo WhatsApp.";
 
 const TAMANHOS = ["PP", "P", "M", "G", "GG", "G1", "G2", "G3"];
@@ -223,9 +223,10 @@ const MODELOS = [
 ];
 /* =================================== */
 
-// Data de hoje em Brasília (AAAA-MM-DD), para a promoção virar sozinha à meia-noite.
-const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
-const emPromo = hoje <= PROMO_ATE;
+const fimPromo = new Date(PROMO_ATE);
+const emPromo = Date.now() < fimPromo.getTime();
+const fmtFim = (o) => fimPromo.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", ...o });
+const textoFim = fmtFim({ day: "2-digit", month: "2-digit" }) + " às " + fmtFim({ hour: "2-digit", hour12: false }).replace(/^24/, "00") + "h";
 const PRECO = emPromo ? PRECO_PROMO : PRECO_NORMAL;
 const brl = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const pedido = MODELOS.map(() => ({})); // [{ "M": 2, "G": 1 }, ...]
@@ -300,7 +301,7 @@ MODELOS.forEach((m, i) => {
 });
 
 $("preco").innerHTML = emPromo
-  ? `<s>${brl(PRECO_NORMAL)}</s><b>${brl(PRECO_PROMO)}</b> por peça<small>Preço de pré-venda até ${PROMO_ATE.slice(8)}/${PROMO_ATE.slice(5, 7)}</small>`
+  ? `<s>${brl(PRECO_NORMAL)}</s><b>${brl(PRECO_PROMO)}</b> por peça<small>Preço de pré-venda até ${textoFim}</small>`
   : `<b>${brl(PRECO_NORMAL)}</b> por peça`;
 
 if (INFO) $("info").textContent = INFO;
