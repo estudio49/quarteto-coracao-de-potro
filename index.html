@@ -100,6 +100,7 @@
     background: transparent; border: 1px solid var(--line); border-radius: 10px;
     min-height: 44px; cursor: pointer; position: relative;
   }
+  .size:disabled { opacity: .45; cursor: not-allowed; }
   .size[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
   .size .n {
     position: absolute; top: -7px; right: -5px; min-width: 20px; height: 20px; padding: 0 5px;
@@ -185,7 +186,7 @@
       <p class="nota">Medidas da peça, em cm. Pode ocorrer variação de até 2&nbsp;cm.</p>
     </div>
   </details>
-<p class="how">Toque no tamanho para adicionar. Pode escolher mais de uma estampa.</p>
+<p class="how" id="how">Toque no tamanho para adicionar. Pode escolher mais de uma estampa.</p>
   <div id="lista"></div>
   <p class="info" id="info"></p>
 </main>
@@ -204,9 +205,8 @@
 <script>
 /* ===== AJUSTES (edite só aqui) ===== */
 const WHATSAPP = "5549999854920";   // (49) 99985-4920
-const PRECO_NORMAL = 110;        // preço por peça depois da promoção
-const PRECO_PROMO = 100;         // preço promocional por peça
-const PROMO_ATE = "2026-11-06T23:59:59-03:00";  // fim da promoção (horário de Brasília); depois volta ao preço normal
+const PRECO = 110;                               // preço por peça
+const PEDIDOS_ATE = "2026-11-08T21:00:00-03:00"; // fim da pré-venda (horário de Brasília); depois o formulário fecha
 const INFO = "Prazo, retirada e pagamento combinados pelo WhatsApp.";
 
 const TAMANHOS = ["PP", "P", "M", "G", "GG", "G1", "G2", "G3"];
@@ -223,11 +223,10 @@ const MODELOS = [
 ];
 /* =================================== */
 
-const fimPromo = new Date(PROMO_ATE);
-const emPromo = Date.now() < fimPromo.getTime();
-const fmtFim = (o) => fimPromo.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", ...o });
+const fimPedidos = new Date(PEDIDOS_ATE);
+const aberto = Date.now() < fimPedidos.getTime();
+const fmtFim = (o) => fimPedidos.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", ...o });
 const textoFim = fmtFim({ day: "2-digit", month: "2-digit" }) + " às " + fmtFim({ hour: "2-digit", hour12: false }).replace(/^24/, "00") + "h";
-const PRECO = emPromo ? PRECO_PROMO : PRECO_NORMAL;
 const brl = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const pedido = MODELOS.map(() => ({})); // [{ "M": 2, "G": 1 }, ...]
 
@@ -300,9 +299,14 @@ MODELOS.forEach((m, i) => {
   ));
 });
 
-$("preco").innerHTML = emPromo
-  ? `<s>${brl(PRECO_NORMAL)}</s><b>${brl(PRECO_PROMO)}</b> por peça<small>Preço de pré-venda até ${textoFim}</small>`
-  : `<b>${brl(PRECO_NORMAL)}</b> por peça`;
+$("preco").innerHTML = `<b>${brl(PRECO)}</b> por peça` +
+  (aberto ? `<small>Pedidos até ${textoFim}</small>` : `<small>Pré-venda encerrada</small>`);
+
+if (!aberto) {
+  document.querySelectorAll(".size").forEach(b => { b.disabled = true; });
+  $("nome").disabled = true;
+  $("how").textContent = "A pré-venda foi encerrada. Obrigado a todos!";
+}
 
 if (INFO) $("info").textContent = INFO;
 
@@ -315,7 +319,8 @@ function resumo() {
   let txt = `<b>${n}</b> ${n === 1 ? "peça" : "peças"}`;
   if (n) txt += ` · <b>${brl(n * PRECO)}</b>`;
   $("total").innerHTML = txt;
-  $("enviar").disabled = n === 0;
+  $("enviar").disabled = !aberto || n === 0;
+  if (!aberto) $("enviar").textContent = "Pré-venda encerrada";
   $("msg").textContent = "";
 }
 
@@ -333,6 +338,7 @@ function mensagem() {
 
 $("enviar").addEventListener("click", () => {
   const msg = $("msg");
+  if (!aberto) { msg.textContent = "A pré-venda foi encerrada."; return; }
   if (!$("nome").value.trim()) { msg.textContent = "Escreva seu nome para continuar."; $("nome").focus(); return; }
   if (!WHATSAPP) { msg.textContent = "WhatsApp ainda não configurado."; return; }
   window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`;
